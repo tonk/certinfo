@@ -174,3 +174,8 @@ using certificates for different hosts: `certinfo -server-name <host> <load-bala
 
 - linux `ls -d /etc/ssl/certs/* | grep '.pem' | xargs certinfo -expiry`
 - mac `cat /etc/ssl/cert.pem | certinfo -expiry`
+ 
+### kubernetes secret
+If the certificate is inside kubernetes secret, it can be piped to certinfo:
+- `kubectl get secret -n <namespace> <secret> -o jsonpath='{.data.<key>}' | base64 -d | certinfo`
+  - e.g. cloudwatch agent `ca.crt` - `kubectl get secret -n amazon-cloudwatch amazon-cloudwatch-observability-agent-server-cert -o jsonpath='{.data.ca\.crt}' | base64 -d | certinfo`
