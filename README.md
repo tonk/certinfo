@@ -2,7 +2,7 @@
 
 [![pipeline](https://github.com/pete911/certinfo/actions/workflows/pipeline.yml/badge.svg)](https://github.com/pete911/certinfo/actions/workflows/pipeline.yml)
 
-> [!WARNING]  
+> [!WARNING]
 > If you installed previous versions (before `v1.0.34`) via brew, you need to reinstall (brew remove certinfo && brew install certinfo) to get updates
 
 Similar to `openssl x509 -in <file> -text` command, but handles chains, multiple files and TCP addresses. TLS/SSL
@@ -17,6 +17,9 @@ certinfo [flags] [<file>|<host:port> ...]
 **file** argument can be:
  - **local file path** `certinfo <filename>`
  - **TCP network address** `certinfo <host:port>` e.g. `certinfo google.com:443`
+   * `certinfo <host:port>` e.g. `certinfo google.com:443`
+   * `certinfo <proto://host>` e.g. `certinfo https://google.com`
+   * `certinfo <proto://host:port>` e.g. `certinfo https://google.com:443`
  - **stdin** `echo "<cert-content>" | certinfo`
 
 ```

@@ -65,7 +65,7 @@ func ParseFlags() (Flags, error) {
 	flagSet.BoolVar(&flags.More, "more", getBoolEnv("CERTINFO_MORE", false), "combination of '-pem -signature -chains'")
 
 	flagSet.Usage = func() {
-		fmt.Fprint(flagSet.Output(), "Usage: certinfo [flags] [<file>|<host:port> ...]\n")
+		fmt.Fprint(flagSet.Output(), "Usage: certinfo [flags] [<file>|<host:port>|<proto://host>|<proto://host:port> ...]\n")
 		flagSet.PrintDefaults()
 	}
 	flags.Usage = flagSet.Usage
