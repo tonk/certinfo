@@ -13,6 +13,13 @@ import (
 
 var Version = "dev"
 
+var protomap = map[string]string{
+		"https": "443",
+		"http":  "80",
+		"ssh":   "22",
+	}
+
+
 func main() {
 
 	flags, err := ParseFlags()
@@ -125,12 +132,6 @@ func stdUrl(arg string) string {
 		return arg
 	}
 
-	protomap := map[string]string{
-		"https": "443",
-		"http":  "80",
-		"ssh":   "22",
-	}
-
 	for proto, port := range protomap {
 		proto = proto + "://"
 		if strings.HasPrefix(arg, proto) {
@@ -147,7 +148,7 @@ func isTCPNetworkAddress(arg string) bool {
 
 	parts := strings.Split(arg, ":")
 	if len(parts) == 2 || len(parts) == 3 {
-		if strings.HasPrefix(arg, "https://") {
+		if _, ok := protomap[parts[0]]; ok {
 			return true
 		}
 
