@@ -13,6 +13,13 @@ import (
 
 var Version = "dev"
 
+var protomap = map[string]string{
+		"https": "443",
+		"http":  "80",
+		"ssh":   "22",
+	}
+
+
 func main() {
 
 	flags, err := ParseFlags()
@@ -93,6 +100,7 @@ func loadFromArgs(args []string, serverName string, insecure bool) cert.Certific
 			go func() {
 				defer wg.Done()
 				if isTCPNetworkAddress(arg) {
+					arg = stdUrl(arg)
 					out <- cert.LoadCertificatesFromNetwork(arg, serverName, insecure)
 					return
 				}
@@ -112,19 +120,41 @@ func loadFromArgs(args []string, serverName string, insecure bool) cert.Certific
 	// sort certificates by input arguments
 	var certsSortedByArgs cert.CertificateLocations
 	for _, arg := range args {
+		arg = stdUrl(arg)
 		certsSortedByArgs = append(certsSortedByArgs, certsByArgs[arg])
 	}
 	return certsSortedByArgs
 }
 
+func stdUrl(arg string) string {
+
+	if !isTCPNetworkAddress(arg) {
+		return arg
+	}
+
+	for proto, port := range protomap {
+		proto = proto + "://"
+		if strings.HasPrefix(arg, proto) {
+			arg = strings.Replace(arg, proto, "", 1)
+			if !strings.Contains(arg, ":") {
+				arg += ":" + port
+			}
+		}
+	}
+	return arg
+}
+
 func isTCPNetworkAddress(arg string) bool {
 
 	parts := strings.Split(arg, ":")
-	if len(parts) != 2 {
-		return false
-	}
-	if _, err := strconv.Atoi(parts[1]); err != nil {
-		return false
+	if len(parts) == 2 || len(parts) == 3 {
+		if _, ok := protomap[parts[0]]; ok {
+			return true
+		}
+
+		if _, err := strconv.Atoi(parts[len(parts)-1]); err != nil {
+			return false
+		}
 	}
 	return true
 }
