@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
-	"github.com/pete911/certinfo/pkg/cert"
-	"github.com/pete911/certinfo/pkg/print"
 	"log/slog"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/pete911/certinfo/pkg/cert"
+	"github.com/pete911/certinfo/pkg/print"
 )
 
-var Version = "dev"
-
-var protomap = map[string]string{
+var (
+	Version  = "dev"
+	protoMap = map[string]string{
 		"https": "443",
 		"http":  "80",
 		"ssh":   "22",
 	}
-
+)
 
 func main() {
 
@@ -100,7 +101,7 @@ func loadFromArgs(args []string, serverName string, insecure bool) cert.Certific
 			go func() {
 				defer wg.Done()
 				if isTCPNetworkAddress(arg) {
-					arg = stdUrl(arg)
+					arg = toTCPNetworkAddress(arg)
 					out <- cert.LoadCertificatesFromNetwork(arg, serverName, insecure)
 					return
 				}
@@ -120,22 +121,22 @@ func loadFromArgs(args []string, serverName string, insecure bool) cert.Certific
 	// sort certificates by input arguments
 	var certsSortedByArgs cert.CertificateLocations
 	for _, arg := range args {
-		arg = stdUrl(arg)
+		arg = toTCPNetworkAddress(arg)
 		certsSortedByArgs = append(certsSortedByArgs, certsByArgs[arg])
 	}
 	return certsSortedByArgs
 }
 
-func stdUrl(arg string) string {
+func toTCPNetworkAddress(arg string) string {
 
 	if !isTCPNetworkAddress(arg) {
 		return arg
 	}
 
-	for proto, port := range protomap {
-		proto = proto + "://"
-		if strings.HasPrefix(arg, proto) {
-			arg = strings.Replace(arg, proto, "", 1)
+	for scheme, port := range protoMap {
+		prefix := scheme + "://"
+		if strings.HasPrefix(arg, prefix) {
+			arg = strings.Replace(arg, prefix, "", 1)
 			if !strings.Contains(arg, ":") {
 				arg += ":" + port
 			}
@@ -146,15 +147,21 @@ func stdUrl(arg string) string {
 
 func isTCPNetworkAddress(arg string) bool {
 
-	parts := strings.Split(arg, ":")
-	if len(parts) == 2 || len(parts) == 3 {
-		if _, ok := protomap[parts[0]]; ok {
+	// check if arg has allowed scheme prefix
+	for scheme := range protoMap {
+		prefix := scheme + "://"
+		if strings.HasPrefix(arg, prefix) {
 			return true
 		}
+	}
 
-		if _, err := strconv.Atoi(parts[len(parts)-1]); err != nil {
-			return false
-		}
+	// we expect only 2 parts (host and port) when split on ':', scheme would be captured already above
+	parts := strings.Split(arg, ":")
+	if len(parts) != 2 {
+		return false
+	}
+	if _, err := strconv.Atoi(parts[1]); err != nil {
+		return false
 	}
 	return true
 }

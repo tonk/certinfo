@@ -11,15 +11,16 @@ version prints as well when using TCP address argument.
 ## usage
 
 ```shell script
-certinfo [flags] [<file>|<host:port> ...]
+certinfo [flags] [<file>|<host:port>|<proto://host>|<proto://host:port> ...]
 ```
 
 **file** argument can be:
  - **local file path** `certinfo <filename>`
  - **TCP network address** `certinfo <host:port>` e.g. `certinfo google.com:443`
    * `certinfo <host:port>` e.g. `certinfo google.com:443`
-   * `certinfo <proto://host>` e.g. `certinfo https://google.com`
-   * `certinfo <proto://host:port>` e.g. `certinfo https://google.com:443`
+   * `certinfo <scheme://host>` e.g. `certinfo https://google.com`
+   * `certinfo <scheme://host:port>` e.g. `certinfo https://google.com:443` (even though scheme and port are allowed to
+     be supplied at the same time, port takes precedence and scheme is ignored if port is present)
  - **stdin** `echo "<cert-content>" | certinfo`
 
 ```

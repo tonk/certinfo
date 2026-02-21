@@ -2,8 +2,9 @@ package print
 
 import (
 	"fmt"
-	"github.com/pete911/certinfo/pkg/cert"
 	"log/slog"
+
+	"github.com/pete911/certinfo/pkg/cert"
 )
 
 func Pem(certificateLocations []cert.CertificateLocation, printChains bool) {

@@ -2,10 +2,11 @@ package cert
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func loadTestCertificates(t *testing.T, files ...string) Certificates {

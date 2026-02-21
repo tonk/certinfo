@@ -2,10 +2,11 @@ package print
 
 import (
 	"fmt"
-	"github.com/pete911/certinfo/pkg/cert"
 	"log/slog"
 	"strings"
 	"time"
+
+	"github.com/pete911/certinfo/pkg/cert"
 )
 
 func Locations(certificateLocations []cert.CertificateLocation, printChains, printPem, printExtensions, printSignature bool) {

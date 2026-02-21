@@ -2,9 +2,10 @@ package print
 
 import (
 	"fmt"
-	"github.com/pete911/certinfo/pkg/cert"
 	"strings"
 	"time"
+
+	"github.com/pete911/certinfo/pkg/cert"
 )
 
 func Expiry(certificateLocations []cert.CertificateLocation) {
